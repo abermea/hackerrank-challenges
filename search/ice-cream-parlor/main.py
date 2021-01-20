@@ -23,38 +23,3 @@ def whatFlavors(cost, money):
                 second = max(possible[i][0], possible[j][0])
                 print("{0} {1}".format(first, second))
                 return
-
-def whatFlavorsE(cost, money):
-    possible = list(map(lambda x, y: (x, y), range(1, len(cost) + 1), cost))
-    possible = list(filter(lambda x: x[1] < money, possible))
-    max_viable = max(possible, key = lambda x: x[1])
-    possible = list(filter(lambda x: x[1] < money - max_viable[1], possible))
-
-    results = {(av[1] + bv[1]):("{0} {1}".format(av[0], bv[0])) 
-                    for ai,av in enumerate(possible) 
-                    for bi,bv in enumerate(possible) 
-                    if av[0] < bv[0]
-                        and ai < bi}
-
-    print(results[money])
-
-def whatFlavorsD(cost, money):
-    for i in range(0, len(cost)):
-        for j in range(i + 1, len(cost)):
-            value = cost[i] + cost[j]
-            if value == money:
-                print("{0} {1}".format(i + 1, j + 1))
-                
-
-if __name__ == '__main__':
-    t = int(input())
-
-    for t_itr in range(t):
-        money = int(input())
-
-        n = int(input())
-
-        cost = list(map(int, input().rstrip().split()))
-
-        whatFlavors(cost, money)
-
