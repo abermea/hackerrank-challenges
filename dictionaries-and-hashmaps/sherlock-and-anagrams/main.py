@@ -17,8 +17,6 @@ def sherlockAndAnagrams(s):
             for i in range(len(s)) 
             for j in range(i + 1, len(s) + 1)]
 
-    substrings.sort()
-
     for substring in substrings:
         counter[substring] += 1
     
@@ -27,4 +25,3 @@ def sherlockAndAnagrams(s):
             count += (math.factorial(elem) // (2 * math.factorial(elem - 2)))
 
     return count
-    
