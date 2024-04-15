@@ -1,11 +1,10 @@
 #!/bin/python3
 
-import math
-import os
-import random
-import re
 import sys
 from pathlib import Path
+from collections import Counter
+import logging
+logger = logging.getLogger(__name__)
 
 #
 # Complete the 'activityNotifications' function below.
@@ -17,38 +16,38 @@ from pathlib import Path
 #
 
 def activityNotifications(expenditure, d):
-    times = 0
-    trailing_expenditures = expenditure[:d]
-    trailing_expenditures.sort()
-
+    times, prev, mid = 0, 0, d / 2
+    counts = counter(expenditure[0:d])
+    
     for i in range(d, len(expenditure)):
-        trailing_median = computeMedian(trailing_expenditures)
-        current_expenditure = expenditure[i]
-        notification_threshold = 2 * trailing_median
-
-        print(i, current_expenditure, notification_threshold)
-
-        if current_expenditure >= notification_threshold:
-            print("Alert!")
+        median_value = median(counts, mid)
+        logger.info(f'Prev: {prev}, Curr: {i}, Median: {median_value}, Threshold: {2 * median_value}, Period: {d}, Mid: {mid}, Expeniture: {expenditure}, Counts: {counts}')
+        if expenditure[i] >= 2 * median_value:
             times += 1
-
-        trailing_expenditures = trailing_expenditures[1:]
-        idx = next((idx for idx, value in enumerate(trailing_expenditures) if value >= current_expenditure), -1)
-        print(current_expenditure, idx, idx - 10, trailing_expenditures[idx - 10:idx + 10], idx + 10)
-        trailing_expenditures.insert(idx, current_expenditure)
+        counts[expenditure[prev]] -= 1
+        counts[expenditure[i]] += 1
+        prev += 1
 
     return times
 
-def computeMedian(arr):
-    midpoint = int(len(arr)/2)
-    if len(arr) % 2 == 1:
-        return arr[midpoint]
-    else:
-        return (arr[midpoint - 1] + arr[midpoint]) / 2
+def counter(arr):
+    counts = [0] * 201
+    for k, v in enumerate(arr):
+        counts[v] += 1
+    return counts
+
+def median(arr, mid):
+    i, cs = 0, 0
+    while (cs < mid):
+        cs += arr[i]
+        i += 1
+    return i - 1 if float(cs) != mid else (2 * i - 1) / 2
     
 if __name__ == '__main__':
+    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
     cases = [
-        ("./case5.txt", 40001, 926),
+        # ("./case5.txt", 40001, 926),
+        ("./case6.txt", 4, 0),
     ]
 
     for case in cases:
@@ -64,5 +63,5 @@ if __name__ == '__main__':
         for expenditure in expenditures:
             ans = activityNotifications(expenditure, d)
             test = ans == result
-            print("{0}: {1}, Expected {2}, Got {3}".format(case[0], test, case[2], ans))
+            print(f'{case[0]}: {test}, Expected {case[2]}, Got {ans}')
 
